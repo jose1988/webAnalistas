@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Pangea Flow</title>
+
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <h:outputStylesheet name="../recursos/css/estilos.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+
+
+    <h:body>  
+          <div class="row">
+            <div class="col-md-12">
+                <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+            </div>
+            <div class="col-md-12">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+
+                        <a class="navbar-brand" href="#">PangeaFlow</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Archivo</a></li>
+                            <li><a href="#">Atrás</a></li>
+                            <li>
+                                <a href="#" >Opciones</a>
+
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#">Cerrar Sesión</a></li>
+
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>      
+            </div>
+        </div>
+
+
+        <div class="row">
+            <h:form id="fom" prependId="false">
+
+                <div class="col-md-2 well well-sm" >
+                    <div class="col-md-12" >
+
+                        <div class="col-md-2" >
+                        </div>
+                        <div class="col-md-10" > 
+                            <p:growl id="messages" showDetail="true" />  
+
+                            <ul class="nav nav-tabs nav-stacked">
+                                <li class="active"> <p:commandButton id="btnRegresar" value="Regresar" /></li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div> 
+
+                <div class="col-md-10"> 
+
+                    <p:tabView dynamic="false" >
+                        <p:tab title="Condiciones"  >
+
+                            <h:panelGroup id="paneltablaAbierta">
+
+
+                                <p:dataTable var="condicion" value="#{finalizarActController.cond}"  paginator="true" rows="7">
+
+                                    <p:column headerText="Id Condicion" >
+                                        #{condicion.id}
+                                    </p:column>
+                                     <p:column headerText="Nombre" >
+                                        #{condicion.nombre}
+                                    </p:column>
+
+                                    <p:column headerText="Estado" >
+                                        #{condicion.estado}
+                                    </p:column>
+                   
+                                    <p:column headerText="Ver Información">
+
+                                        <p:commandButton id="verinfo" update="@form" icon="ui-icon-search"  oncomplete="infoActividadAbierta.show()"  title="Ver">
+                                            <f:setPropertyActionListener value="#{condicion}" target="#{finalizarActController.condactual}" />
+                                        </p:commandButton>
+
+                                    </p:column>
+
+
+
+                                </p:dataTable>
+
+                                <p:dialog id="dlgactividadAbierta"  header="Actividad" widgetVar="infoActividadAbierta">  
+
+                                    <h:panelGroup id="actabierta">
+                                        <dl class="dl-horizontal">
+                                            <dt>Id:</dt> 
+                                            <dd><h:outputText value="#{finalizarActController.condactual.id}" rendered="#{not empty finalizarActController.condactual}" />
+                                            </dd>
+                                            <dt>Estado:</dt>
+                                            <dd> <h:outputLabel> #{finalizarActController.condactual.nombre} </h:outputLabel>
+                                            </dd>
+                                            <dt>Duracion:</dt>
+                                            <dd><h:outputLabel> #{finalizarActController.condactual.estado} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de asignacion: </dt>
+                                            <dd>  <h:outputLabel> #{finalizarActController.condactual.descripcion} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de apertura :</dt>
+                                            <dd><h:outputLabel> #{finalizarActController.condactual.documentacion} </h:outputLabel>
+                                            </dd>
+                                          
+                                            <dt> 
+                                                <p:commandButton update="@form" value="Finalzar" actionListener="#{finalizarActController.finalizar}" label="Aceptar" icon="ui-icon-check" process="actabierta"  oncomplete="infoActividadAbierta.hide();" title="Finalizar Actividad">
+                                              
+                                                </p:commandButton></dt>
+                                            <dd>
+                                                <p:commandButton update="@form" value="Finalzar" actionListener="#{finalizarActController.finalizardoc}" label="Aceptar" icon="ui-icon-check" process="actabierta"  oncomplete="infoActividadAbierta.hide();" title="Finalizar Actividad con ducomentacion">
+                                              
+                                                </p:commandButton> </dd>
+
+
+                                        </dl>
+                                    </h:panelGroup>
+                                </p:dialog>
+
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                    </p:tabView>
+
+
+                </div> 
+
+            </h:form> 
+
+        </div> 
+
+      
+    </h:body>
+</html>
+
+
+

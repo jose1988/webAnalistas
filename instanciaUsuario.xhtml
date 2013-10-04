@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Pangea Flow</title>
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <h:outputStylesheet name="../recursos/css/estilos.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+
+    <h:body>
+        <!-- Se realiza la llamada a los métodos en donde se verifica el logueo del usuario -->
+        <c:if test="#{instanciaUsuarioController.verificarLogueo()}">
+            <h:outputText value="#{instanciaUsuarioController.Redireccionar()}" />
+        </c:if>
+
+        <!-- Se realiza la llamada al método en donde se cierra la sesión si han pasado 4 minutos y esta inactiva -->
+        <p:idleMonitor timeout="240000">  
+            <p:ajax event="idle" listener="#{instanciaUsuarioController.cerrarPorInactividad}" />  
+        </p:idleMonitor>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+            </div>
+            <div class="col-md-12">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">PangeaFlow</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Archivo</a></li>
+                            <li><a href="#">Atrás</a></li>
+                            <li><a href="#">Opciones</a></li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="cierreSesion.xhtml">Cerrar Sesión</a></li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>      
+            </div>
+        </div>
+
+        <div class="row">
+            <h:form id="fom"  prependId="false">
+                <div class="col-md-2 well" >
+                    <div class="row">
+                        <div class="col-md-12" > 
+                            <p:growl id="messages" showDetail="true" />
+                            <!-- Arbol que muestra las opciones de abierta o cerrada para listar las instancias que posean dicho estado -->
+                            <p:tree value="#{instanciaUsuarioController.estact}" selection="#{instanciaUsuarioController.estadoSeleccionado}" var="box" selectionMode="single" style="width: auto;">
+                                <p:ajax event="select" update="@form" listener="#{instanciaUsuarioController.onNodeSelect}" />
+
+                                <p:treeNode type="a" icon="ui-icon-folder-open">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+
+                                <p:treeNode type="c" icon="ui-icon-folder-collapsed">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+                            </p:tree>
+                        </div>
+                    </div>
+                </div> 
+
+                <div class="col-md-10">
+                    <p:tabView dynamic="false" >
+                        <p:tab title="#{instanciaUsuarioController.estadoSeleccionado}" >
+
+                            <!-- Tabla en la que se muestra la lista de instancias para la opción de estado abierta -->
+                            <h:panelGroup id="paneltablaAbierta" >
+                                <p:dataTable var="Instancia" value="#{instanciaUsuarioController.instancias}"  paginator="true" rows="7">
+
+                                    <p:column headerText="Id Instancia" style="width:  20px; #{instanciaUsuarioController.estiloAbierta(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'abierta'}">
+                                        #{Instancia.id}
+                                    </p:column>
+
+                                    <p:column headerText="Referencia" style="width:  170px; #{instanciaUsuarioController.estiloAbierta(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'abierta'}">>
+                                        #{Instancia.referencia}
+                                    </p:column>
+
+                                    <!-- Botón que llama al diálogo en el cual se carga la información de la instancia seleccionada -->
+                                    <p:column headerText="Ver Información" style="width:  40px; text-align: center; #{instanciaUsuarioController.estiloAbierta(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'abierta'}">
+                                        <p:commandButton update="@form" icon="ui-icon-search"  oncomplete="infoInstanciaAbierta.show()"  title="Ver">
+                                            <f:setPropertyActionListener value="#{Instancia}" target="#{instanciaUsuarioController.inst}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                    
+                                     <p:column headerText="Id Instancia" style="width:  20px; #{instanciaUsuarioController.estiloCerrada(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'cerrada'}">
+                                        #{Instancia.id}
+                                    </p:column>
+
+                                    <p:column headerText="Referencia" style="width:  170px; #{instanciaUsuarioController.estiloCerrada(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'cerrada'}">
+                                        #{Instancia.referencia}
+                                    </p:column>
+
+
+                                    <!-- Botón que llama al método que envia a la página actividadesPorInstancia.xhtml en la cual se listan las actividades dependiendo de la instancia seleccionada -->
+                                    <p:column headerText="Ver Actividades" style="width:  40px; text-align: center; #{instanciaUsuarioController.estiloAbierta(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'abierta'}">
+                                        <p:commandButton update="@form" icon="ui-icon-link" action="#{instanciaUsuarioController.listarActividades}" title="Ir a Actividades" >
+                                            <f:setPropertyActionListener value="#{Instancia}" target="#{instanciaUsuarioController.inst}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <!-- Botón que llama al método que cierra la instancia seleccionada -->
+                                    <p:column headerText="Cerrar Instancia" style="width:  40px; text-align: center; #{instanciaUsuarioController.estiloAbierta(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'abierta'}">
+                                        <p:commandButton update="@form" icon="ui-icon-closethick" action="#{instanciaUsuarioController.cerrarInstanciaSeleccionada()}" >
+                                            <f:setPropertyActionListener value="#{Instancia}" target="#{instanciaUsuarioController.inst}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                    <!-- Botón que llama al diálogo en el cual se carga la información de la instancia seleccionada -->
+                                    <p:column headerText="Ver Información" style="width:  40px; text-align: center; #{instanciaUsuarioController.estiloCerrada(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'cerrada'}">
+                                        <p:commandButton update="@form" icon="ui-icon-search"  oncomplete="infoInstanciaCerrada.show()"  title="Ver">
+                                            <f:setPropertyActionListener value="#{Instancia}" target="#{instanciaUsuarioController.inst}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <!-- Botón que llama al método que envia a la página actividadesPorInstancia.xhtml en la cual se listan las actividades dependiendo de la instancia seleccionada -->                                    
+                                    <p:column headerText="Ver Actividades" style="width:  40px; text-align: center; #{instanciaUsuarioController.estiloCerrada(Instancia)}" rendered="#{instanciaUsuarioController.estadoSeleccionado eq 'cerrada'}">
+                                        <p:commandButton update="@form" icon="ui-icon-link" action="#{instanciaUsuarioController.listarActividades}" >
+                                            <f:setPropertyActionListener value="#{Instancia}" target="#{instanciaUsuarioController.inst}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <!-- Diálogo que muestra la información de la instancia seleccionada -->
+                                <p:dialog id="dlgInstanciaAbierta"  header="Instancia" widgetVar="infoInstanciaAbierta">  
+                                    <h:panelGroup id="instabierta">
+                                        <dl class="dl-horizontal">
+                                            <dt>Id: </dt> 
+                                            <dd><h:outputText value="#{instanciaUsuarioController.inst.id}" rendered="#{not empty instanciaUsuarioController.instancias}" />
+                                            </dd>
+                                            <dt>Estado: </dt>
+                                            <dd> <h:outputLabel> #{instanciaUsuarioController.inst.estado} </h:outputLabel>
+                                            </dd>
+                                            <dt>Descripción: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.descripcion} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Apertura: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.formatoFecha(instanciaUsuarioController.inst.fechaApertura)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Cierre: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.formatoFecha(instanciaUsuarioController.inst.fechaCierre)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Referencia: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.referencia} </h:outputLabel>
+                                            </dd>
+                                            <dt>Usuario: </dt> 
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idUsuario.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Periodo: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idPeriodoGrupoProceso.idPeriodo.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Grupo: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idPeriodoGrupoProceso.idGrupo.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Proceso: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idPeriodoGrupoProceso.idProceso.id} </h:outputLabel>
+                                            </dd>
+                                            <dd>
+                                                <p:commandButton value="Cancelar" label="Cancelar" onclick="infoInstanciaAbierta.hide()" icon="ui-icon-close"  title="Cancelar">
+                                                </p:commandButton> </dd>
+                                        </dl>
+                                    </h:panelGroup>
+                                </p:dialog>
+                          
+   
+                                <!-- Diálogo que muestra la información de la instancia seleccionada -->
+                             <p:dialog id="dlgInstanciaCerrada"  header="Instancia" widgetVar="infoInstanciaCerrada">  
+                                    <h:panelGroup id="instcerrada">
+                                        <dl class="dl-horizontal">
+                                            <dt>Id:</dt> 
+                                            <dd><h:outputText value="#{instanciaUsuarioController.inst.id}" rendered="#{not empty instanciaUsuarioController.instancias}" />
+                                            </dd>
+                                            <dt>Estado:</dt>
+                                            <dd> <h:outputLabel> #{instanciaUsuarioController.inst.estado} </h:outputLabel>
+                                            </dd>
+                                            <dt>Descripción:</dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.descripcion} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Apertura:</dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.formatoFecha(instanciaUsuarioController.inst.fechaApertura)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Cierre:</dt>
+                                            <dd> <h:outputLabel> #{instanciaUsuarioController.formatoFecha(instanciaUsuarioController.inst.fechaCierre)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Referencia: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.referencia} </h:outputLabel>
+                                            </dd>
+                                            <dt>Usuario:</dt> 
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idUsuario.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Periodo: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idPeriodoGrupoProceso.idPeriodo.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Grupo: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idPeriodoGrupoProceso.idGrupo.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Proceso: </dt>
+                                            <dd><h:outputLabel> #{instanciaUsuarioController.inst.idPeriodoGrupoProceso.idProceso.id} </h:outputLabel>
+                                            </dd>
+                                            <dd>
+                                                <p:commandButton value="Cancelar" label="Cancelar" onclick="infoInstanciaCerrada.hide()" icon="ui-icon-close"  title="Cancelar">
+                                                </p:commandButton> </dd>
+                                        </dl>
+                                    </h:panelGroup>
+                                </p:dialog>
+                            </h:panelGroup>
+                        </p:tab>
+                    </p:tabView>
+                </div> 
+            </h:form> 
+        </div> 
+    </h:body>
+</html>

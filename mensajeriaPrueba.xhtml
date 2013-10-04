@@ -1,0 +1,327 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <title>Pangea Flow</title>
+
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <h:outputStylesheet name="../recursos/css/estilos.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+
+
+    <h:body>  
+         <c:if test="#{mensajeriaPruebaController.verificarLogueo()}">
+            <h:outputText value="#{mensajeriaPruebaController.Redireccionar()}" />
+        </c:if>
+         <p:idleMonitor timeout="240000">  
+            <p:ajax event="idle" listener="#{mensajeriaPruebaController.cerrarPorInactividad}" />  
+        </p:idleMonitor> 
+        <div class="row">
+            <div class="col-md-12">
+                <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+            </div>
+            <div class="col-md-12">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+
+                        <a class="navbar-brand" href="#">PangeaFlow</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Archivo</a></li>
+                            <li><a href="#">Atrás</a></li>
+                            <li>
+                                <a href="#" >Opciones</a>
+
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                                <li><a href="cierreSesion.xhtml"  >Cerrar Sesión</a></li>
+
+                            </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>      
+            </div>
+        </div>
+
+
+
+
+        <div class="row">
+            <h:form id="fom"  prependId="false">
+                <div class="col-md-2 well" >
+                    <div class="row">
+                       
+                        <div class="col-md-12" > 
+                            <p:growl id="messages" showDetail="true" />  
+
+
+                            <p:tree value="#{mensajeriaPruebaController.mailboxes}" selection="#{mensajeriaPruebaController.estadoSeleccionado}" var="box" selectionMode="single" style="width: auto;">
+                                <p:ajax event="select" update="@form" listener="#{mensajeriaPruebaController.onNodeSelect}" /> 
+                                <p:treeNode icon="ui-icon-mail-closed" >
+                                    <h:outputText value="#{box}"/>
+
+
+                                </p:treeNode>
+
+                                <p:treeNode type="i" icon="ui-icon-arrow-2-e-w">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+
+                                <p:treeNode type="s" icon="ui-icon-folder-open">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+
+                                <p:treeNode type="t" icon="ui-icon-folder-collapsed">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+
+                                <p:treeNode type="j" icon="ui-icon-arrowthickstop-1-n">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+                            </p:tree>
+                        </div>
+                    </div>
+
+                </div> 
+
+
+
+                <div class="col-md-10"> 
+
+
+
+
+                    <h:panelGroup id="paneltablaRecibidos" rendered="#{mensajeriaPruebaController.estadoSeleccionado eq 'Recibidos'}">
+                        <p:tabView id="tabView">  
+                           
+                            <p:tab  title="#{mensajeriaPruebaController.estadoSeleccionado}">  
+                                <p:dataTable var="mail" value="#{mensajeriaPruebaController.mails}"  paginator="true" rows="5">
+
+                                 
+                                    <p:column  headerText="Para:"  style="width:  20px; text-align: center; #{mensajeriaPruebaController.sombreado(mail)}">
+                                         #{mail.para}
+                                       
+                                    </p:column>
+
+                                    <p:column headerText="Asunto:" style="width:  20px; text-align: center; #{mensajeriaPruebaController.sombreado(mail)}">
+                                        #{mail.asunto}
+                                    </p:column>
+
+                                    <p:column headerText="Fecha" style="width:  20px; text-align: center; #{mensajeriaPruebaController.sombreado(mail)}">
+                                       #{mensajeriaController.formatoFecha(mail.fecha)}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información" style="width:  20px; text-align: center; #{mensajeriaPruebaController.sombreado(mail)}">
+
+                                        <p:commandButton id="verinfo" update=":fom" icon="ui-icon-search"   title="Ver">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                   <p:column headerText="Eliminar" style="width:  20px; text-align: center;">
+
+                                        <p:commandButton id="eliminar" update=":fom" icon="ui-icon-search" action="#{mensajeriaPruebaController.mensajeelimimar}" title="Eliminar">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+
+                            </p:tab>
+
+                        </p:tabView>
+                    </h:panelGroup>
+                    
+                   <h:panelGroup id="paneltablaEnviados" rendered="#{mensajeriaPruebaController.estadoSeleccionado eq 'Enviados'}">
+                        <p:tabView id="tabView2">  
+                           
+                            <p:tab  title="#{mensajeriaPruebaController.estadoSeleccionado}">  
+                                <p:dataTable var="mail" value="#{mensajeriaPruebaController.mails}"  paginator="true" rows="5">
+
+                                 
+                                    <p:column  headerText="Para:"  style="width:  20px; text-align: center; ">
+                                         #{mail.para}
+                                       
+                                    </p:column>
+
+                                    <p:column headerText="Asunto:" style="width:  20px; text-align: center;">
+                                        #{mail.asunto}
+                                    </p:column>
+
+                                    <p:column headerText="Fecha" style="width:  20px; text-align: center; ">
+                                       #{mensajeriaPruebaController.formatoFecha(mail.fecha)}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información" style="width:  20px; text-align: center;">
+
+                                        <p:commandButton id="verinfo" update=":fom" icon="ui-icon-search"  title="Ver">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                    <p:column headerText="Eliminar" style="width:  20px; text-align: center;">
+
+                                        <p:commandButton id="eliminar" update=":fom" icon="ui-icon-search" action="#{mensajeriaPruebaController.mensajeelimimar}" title="Eliminar">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+
+                            </p:tab>
+
+                        </p:tabView>
+                    </h:panelGroup>
+                        <h:panelGroup id="paneltablaPapelera" rendered="#{mensajeriaPruebaController.estadoSeleccionado eq 'Papelera'}">
+                        <p:tabView id="tabView3">  
+                           
+                            <p:tab  title="#{mensajeriaPruebaController.estadoSeleccionado}">  
+                                <p:dataTable var="mail" value="#{mensajeriaPruebaController.mails}"  paginator="true" rows="5">
+
+                                 
+                                    <p:column  headerText="Para:"  style="width:  20px; text-align: center; ">
+                                         #{mail.para}
+                                       
+                                    </p:column>
+
+                                    <p:column headerText="Asunto:" style="width:  20px; text-align: center;">
+                                        #{mail.asunto}
+                                    </p:column>
+
+                                    <p:column headerText="Fecha" style="width:  20px; text-align: center; ">
+                                       #{mensajeriaPruebaController.formatoFecha(mail.fecha)}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información" style="width:  20px; text-align: center;">
+
+                                        <p:commandButton id="verinfo" update=":fom" icon="ui-icon-search"  title="Ver">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                  <p:column headerText="Eliminar" style="width:  20px; text-align: center;">
+
+                                        <p:commandButton id="eliminar" update=":fom" icon="ui-icon-search" action="#{mensajeriaPruebaController.mensajeelimimar}" title="Eliminar">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+
+                            </p:tab>
+
+                        </p:tabView>
+                    </h:panelGroup>
+                        
+                     <h:panelGroup id="paneltablaPersonal" rendered="#{mensajeriaPruebaController.estadoSeleccionado ne 'Papelera' and mensajeriaPruebaController.estadoSeleccionado ne 'Enviados' and mensajeriaPruebaController.estadoSeleccionado ne 'Recibidos'}">
+                        <p:tabView id="tabView4">  
+                           
+                            <p:tab  title="#{mensajeriaPruebaController.estadoSeleccionado}">  
+                                <p:dataTable var="mail" value="#{mensajeriaPruebaController.mails}"  paginator="true" rows="5">
+
+                                 
+                                    <p:column  headerText="Para:"  style="width:  20px; text-align: center; ">
+                                         #{mail.para}
+                                       
+                                    </p:column>
+
+                                    <p:column headerText="Asunto:" style="width:  20px; text-align: center;">
+                                        #{mail.asunto}
+                                    </p:column>
+
+                                    <p:column headerText="Fecha" style="width:  20px; text-align: center; ">
+                                       #{mensajeriaController.formatoFecha(mail.fecha)}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información" style="width:  20px; text-align: center;">
+
+                                        <p:commandButton id="verinfo" update=":fom" icon="ui-icon-search"  title="Ver">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                  <p:column headerText="Eliminar" style="width:  20px; text-align: center;">
+
+                                      <p:commandButton id="eliminar" update=":fom" icon="ui-icon-search" action="#{mensajeriaPruebaController.mensajeelimimar}"  title="Eliminar">
+                                            <f:setPropertyActionListener value="#{mail}" target="#{mensajeriaPruebaController.mail}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+
+                            </p:tab>
+                            
+                            <p:tab title="Modificar">
+                                <h:panelGroup id="modificarban">
+                                    <h:inputText id="nombre" value="#{mensajeriaPruebaController.nomb}"></h:inputText>
+                                    <p:commandButton value="Modificar" label="Modificar" action="#{mensajeriaPruebaController.modificarBand(mensajeriaPruebaController.nomb)}">
+                                    </p:commandButton>
+                                </h:panelGroup>
+                            </p:tab>
+                            
+                            <p:tab title="Eliminar">
+                                <h:panelGroup id="eliminarban">
+                                    <p:commandButton value="Eliminar" label="Eliminar" action="#{mensajeriaPruebaController.eliminarBand}">
+                                    </p:commandButton>
+                                    
+                                    <p:commandButton value="Cancelar" label="Cancelar" action="#{mensajeriaPruebaController.redireccionando}">
+                                    </p:commandButton>
+                                </h:panelGroup>
+                            </p:tab>
+
+                        </p:tabView>
+                    </h:panelGroup>
+
+                </div> 
+                <div class="col-md-12">
+                    
+                    <div class="col-md-2">
+                    
+                    
+                </div>
+                    <div class="col-md-10">
+                    
+                    <p:outputPanel id="mailVista">
+                               
+                                 <h:panelGroup id="actabierta">
+                                        <dl class="dl-horizontal">
+                                            <dt>Id:</dt> 
+                                            <dd> <h:outputText value="#{mensajeriaPruebaController.mail.de}" rendered="#{not empty mensajeriaPruebaController.mail}" />
+                                            </dd>
+                                            <dt>Estado:</dt>
+                                            <dd> <h:outputLabel> #{mensajeriaPruebaController.mail.de} </h:outputLabel>
+                                            </dd>
+                                             <dt>Fecha de asignacion: </dt>
+                                            <dd>  <h:outputLabel> #{mensajeriaPruebaController.formatoFecha(mensajeriaPruebaController.mail.fecha)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Duracion:</dt>
+                                            <dd><h:outputLabel> #{mensajeriaPruebaController.mail.texto} </h:outputLabel>
+                                            </dd>
+                                           
+                                            
+                                           
+                                        </dl>
+                                    </h:panelGroup>
+                            </p:outputPanel>
+                </div>
+                </div>
+            </h:form> 
+
+        </div> 
+    </h:body>
+</html>

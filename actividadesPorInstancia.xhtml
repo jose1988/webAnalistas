@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Pangea Flow</title>
+
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+    <h:body>
+        <!--  Test en en el cual se verifica si el usuario esta logueado , en caso de no ser asi sera redireccionado a la pagina index.xhtml -->
+
+        <!-- -->
+        
+       
+        <c:if test="#{actividadesPorInstanciaController.verificarLogueo()}">
+            <h:outputText value="#{actividadesPorInstanciaController.Redireccionar()}" />
+        </c:if>
+        <!--  Test en en el cual se verifica si se esta enviando el identificador de la instancia , en caso de no ser asi se redireccionara a la página instanciaUsuario.xhtml  -->
+        <c:if test="#{actividadesPorInstanciaController.verificarInstancia()}">
+            <h:outputText value="#{actividadesPorInstanciaController.Redireccionar()}" />
+        </c:if>
+        <!-- outputText en el cual se llamara al controller para listar de nuevo las actividades en el caso que no pase por el constructor del controller  -->
+        <h:outputText value="#{actividadesPorInstanciaController.listarActividades()}" />
+        <!-- Componente idleMonitor de primefaces que permitira cerrar la sesión del usuario a causa de su inactividad en un tiempo de 4 min -->
+        <p:idleMonitor timeout="240000">  
+            <p:ajax event="idle" listener="#{actividadesPorInstanciaController.cerrarPorInactividad}" />  
+        </p:idleMonitor> 
+        <div class="row-fluid">
+            <div class="span12"> 
+                <div class="span4">
+                    <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+                </div>
+                <div class="span8">
+                    <nav class="navbar navbar-default" role="navigation">
+                        <!-- Marca y alternar obtener agrupan para una mejor visualización en dispositivos móviles-->
+                        <div class="navbar-header">
+
+                            <a class="navbar-brand" href="#">PangeaFlow</a>
+                        </div>
+
+                        <!-- Recoge los enlaces de navegación, formularios y otros contenidos para alternar -->
+                        <div class="collapse navbar-collapse navbar-ex1-collapse">
+                            <ul class="nav navbar-nav">
+                                <li class="active"><a href="#">Archivo</a></li>
+                                <li><a href="atrasInstancia.xhtml">Atrás</a></li>
+                                <li>
+                                    <a href="#" >Opciones</a>
+
+                                </li>
+                            </ul>
+
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="cierreSesion.xhtml"  >Cerrar Sesión</a></li>
+
+                            </ul>
+                        </div><!-- /.navbar-collapse -->
+                    </nav>      
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <h:form id="fom" styleClass="jsfcrud_list_form" prependId="false">
+                <div class="span12"> 
+                    <p:tabView dynamic="false" >
+                        <p:tab title="Lista de Actividades por Instancia">
+                            <h:panelGroup id="paneltablaUsuario" >
+                                <!-- Componente dataTable en el cual se listara las actividades de acuerdo al identificador de la instancia que se reciba  -->        
+                                <p:dataTable var="actividad" value="#{actividadesPorInstanciaController.actividades}"  paginator="true" rows="6"  id="tablex">
+
+                                    <p:column headerText="Id Actividad" style="width:  20px; text-align: center; #{actividadesPorInstanciaController.estilo(actividad)}" >
+                                        #{actividad.id}
+                                    </p:column>
+                                    <p:column headerText="Fecha de Asignación" style="width:  20px; text-align: center; #{actividadesPorInstanciaController.estilo(actividad)}" >
+                                        #{actividadesPorInstanciaController.formatoFecha(actividad.fechaAsignacion)}
+                                    </p:column>
+
+                                    <p:column headerText="Estado" style="width:  20px; text-align: center; #{actividadesPorInstanciaController.estilo(actividad)}" >
+                                        #{actividad.estado}
+                                    </p:column>
+
+                                    <p:column headerText="Duración" style="width:  20px; text-align: center; #{actividadesPorInstanciaController.estilo(actividad)}" >
+                                        #{actividad.duracion}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información" style="width:  20px; text-align: center; #{actividadesPorInstanciaController.estilo(actividad)}" >
+
+                                        <p:commandButton id="verinfo" update="@form" icon="ui-icon-search"  oncomplete="infoActividad.show()"  title="Ver">
+                                            <f:setPropertyActionListener value="#{actividad}" target="#{actividadesPorInstanciaController.act}" />
+                                        </p:commandButton>
+
+                                    </p:column>
+
+                                </p:dataTable>
+                                <!-- Dialogo de Primefaces en el cual se muestra con mas detalle una actividad seleccionada -->
+                                <p:dialog id="dlgactividad"  header="Actividad" widgetVar="infoActividad">  
+
+                                    <h:panelGroup id="infoActividad">
+                                        <dl class="dl-horizontal">
+                                            <dt>Id:</dt> 
+                                            <dd><h:outputText value="#{actividadesPorInstanciaController.act.id}" rendered="#{not empty actividadesPorInstanciaController.actividades}" />
+                                            </dd>
+                                            <dt>Estado:</dt>
+                                            <dd> <h:outputLabel> #{actividadesPorInstanciaController.act.estado} </h:outputLabel>
+                                            </dd>
+                                            <dt>Duracion:</dt>
+                                            <dd><h:outputLabel> #{actividadesPorInstanciaController.act.duracion} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de asignacion: </dt>
+                                            <dd>  <h:outputLabel> #{actividadesPorInstanciaController.formatoFecha(actividadesPorInstanciaController.act.fechaAsignacion)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de apertura :</dt>
+                                            <dd><h:outputLabel> #{actividadesPorInstanciaController.formatoFecha(actividadesPorInstanciaController.act.fechaApertura)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de alerta:  </dt>
+                                            <dd> <h:outputLabel> #{actividadesPorInstanciaController.formatoFecha(actividadesPorInstanciaController.act.fechaAlerta)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de cierre:</dt>
+                                            <dd>  <h:outputLabel> #{actividadesPorInstanciaController.formatoFecha(actividadesPorInstanciaController.act.fechaCierre)} </h:outputLabel>
+                                            </dd>
+                                            <dt>tarea:  </dt>
+                                            <dd> <h:outputLabel>#{actividadesPorInstanciaController.act.idTarea.nombre} </h:outputLabel>
+                                            </dd>
+                                            <dt>Usuario: </dt>
+                                            <dd><h:outputLabel> #{actividadesPorInstanciaController.act.idUsuario.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Prioridad:</dt> 
+                                            <dd> <h:outputLabel> #{actividadesPorInstanciaController.act.idPrioridad.nombre} </h:outputLabel>
+                                            </dd>
+                                            <dt>Instancia: </dt>
+                                            <dd> <h:outputLabel> #{actividadesPorInstanciaController.act.idInstancia.descripcion} </h:outputLabel>
+                                            </dd>
+                                        </dl>
+                                    </h:panelGroup>
+                                </p:dialog>
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                    </p:tabView>
+                </div> 
+            </h:form> 
+
+        </div> 
+    </h:body>
+</html>
+
+
+

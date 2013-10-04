@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Pangea Flow</title>
+
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+    <h:body>
+        <!--  Test en en el cual se verifica si el usuario esta logueado , en caso de no ser asi sera redireccionado a la pagina index.xhtml -->
+        <c:if test="#{actividadesUsuarioController.verificarLogueo()}">
+            <h:outputText value="#{actividadesUsuarioController.Redireccionar()}" />
+        </c:if>
+        <!--  Test en en el cual se verifica si se esta enviando el identificador del usuario y el identificador del grupo al que pertenece , en caso de no ser asi se redireccionara a la página usuarioGrupo.xhtml  -->
+        <c:if test="#{actividadesUsuarioController.verificarUsuarioId()}">
+            <h:outputText value="#{actividadesUsuarioController.redireccionarUsuarioGrupo()}" />
+        </c:if>
+        <!-- outputText en el cual se llamara al controller para listar de nuevo las actividades en el caso que no pase por el constructor del controller  -->
+        <h:outputText value="#{actividadesUsuarioController.listarActividades()}" />
+        <!-- Componente idleMonitor de primefaces que permitira cerrar la sesión del usuario a causa de su inactividad en un tiempo de 4 min -->
+        <p:idleMonitor timeout="240000">  
+            <p:ajax event="idle" listener="#{actividadesUsuarioController.cerrarPorInactividad}" />  
+        </p:idleMonitor> 
+        <!--  Growl en el cual se mostraran los mensajes en el caso de que libere una o todas las acticidades  -->
+        <p:growl id="mensajes" showDetail="true"  life="6000" />
+        <div class="row-fluid">
+            <div class="span12"> 
+                <div class="span4">
+                    <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+                </div>
+                <div class="span8">
+                    <nav class="navbar navbar-default" role="navigation">
+                        <!--Marca y alternar obtener agrupan para una mejor visualización en dispositivos móviles -->
+                        <div class="navbar-header">
+
+                            <a class="navbar-brand" href="#">PangeaFlow</a>
+                        </div>
+
+                        <!-- Recoge los enlaces de navegación, formularios y otros contenidos para alternar -->
+                        <div class="collapse navbar-collapse navbar-ex1-collapse">
+                            <ul class="nav navbar-nav">
+                                <li class="active"><a href="#">Archivo</a></li>
+                                <li><a href="atras.xhtml">Atrás</a></li>
+                                <li>
+                                    <a href="#" >Opciones</a>
+
+                                </li>
+                            </ul>
+
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="cierreSesion.xhtml"  >Cerrar Sesión</a></li>
+
+                            </ul>
+                        </div><!-- /.navbar-collapse -->
+                    </nav>      
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <h:form id="fom" styleClass="jsfcrud_list_form" prependId="false">
+                <div class="span12"> 
+                    <p:tabView dynamic="false" >
+                        <p:tab title="Lista de Actividades del Usuario">
+                            <h:panelGroup id="paneltablaUsuario" >
+                                <!-- Componente dataTable en el cual se listara las actividades de acuerdo al identificador del usuario y el identofocador del grupo al que pertenece -->        
+                                <p:dataTable var="actividad" value="#{actividadesUsuarioController.actividades}"  paginator="true" rows="6"  id="tablex">
+
+                                    <p:column headerText="Id Actividad"  >
+                                        #{actividad.id}
+                                    </p:column>
+                                    <p:column headerText="Fecha de Asignación"  >
+                                        #{actividadesUsuarioController.formatoFecha(actividad.fechaAsignacion)}
+                                    </p:column>
+
+                                    <p:column headerText="Estado"  >
+                                        #{actividad.estado}
+                                    </p:column>
+
+                                    <p:column headerText="Duración"  >
+                                        #{actividad.duracion}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información"  >
+
+                                        <p:commandButton update="@form :mensajes" icon="ui-icon-check" value="Liberar" action="#{actividadesUsuarioController.liberarActividadUsuario}" title="aceptar">
+
+                                            <f:setPropertyActionListener value="#{actividad}" target="#{actividadesUsuarioController.act}" />
+
+                                        </p:commandButton>
+
+                                    </p:column>
+
+                                </p:dataTable>
+                                <div class="col-md-12 text-center">
+                                    <p:commandButton  update="@form :mensajes" icon="ui-icon-circle-check" value="Liberar Actividades" action="#{actividadesUsuarioController.liberarActividadesUsuario}" title="aceptar" />
+                                </div>
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                    </p:tabView>
+                </div> 
+            </h:form> 
+        </div> 
+    </h:body>
+</html>
+
+
+

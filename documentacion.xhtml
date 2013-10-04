@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Pangea Flow</title>
+
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <h:outputStylesheet name="../recursos/css/estilos.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+
+
+    <h:body>  
+          <div class="row">
+            <div class="col-md-12">
+                <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+            </div>
+            <div class="col-md-12">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+
+                        <a class="navbar-brand" href="#">PangeaFlow</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Archivo</a></li>
+                            <li><a href="#">Atrás</a></li>
+                            <li>
+                                <a href="#" >Opciones</a>
+
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#">Cerrar Sesión</a></li>
+
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>      
+            </div>
+        </div>
+
+
+        <div class="row">
+            <h:form id="fom" prependId="false">
+
+                <div class="col-md-2 well well-sm" >
+                    <div class="col-md-12" >
+
+                        <div class="col-md-2" >
+                        </div>
+                        <div class="col-md-10" > 
+                            <p:growl id="messages" showDetail="true" />  
+
+                            <ul class="nav nav-tabs nav-stacked">
+                                <li class="active"> <p:commandButton id="btnRegresar" value="Regresar" /></li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div> 
+
+              <div class="col-md-10"> 
+
+                    <p:tabView dynamic="false" >
+                        <p:tab title="Actividad"  >
+
+                            <h:panelGroup id="paneltablaAbierta">
+
+
+                                <p:dataTable var="actividad" value="#{documentacionController.act}"  >
+
+                                    <p:column headerText="Id actividad" >
+                                        #{actividad.id}
+                                    </p:column>
+                                     <p:column headerText="Nombre de la tarea" >
+                                        #{actividad.idTarea.nombre}
+                                    </p:column>
+
+                                    <p:column headerText="Estado" >
+                                        #{actividad.estado}
+                                    </p:column>
+                   
+                                    <p:column headerText="añadir documento">
+
+                               
+
+                                    
+                                   
+                                    
+                                        <h:form id="basicUpload">             
+                                            <p:messages showDetail="true"/>  
+
+                                            <p:fileUpload value="#{documentacionController.file}" mode="simple"/>  
+                                            <br /><br />
+                                            <p:commandButton value="Submit" ajax="false" 
+                                                             actionListener="#{documentacionController.upload}"/>  
+                                         </h:form>
+                                    
+
+                                    </p:column>
+
+
+
+                                </p:dataTable>
+
+                                
+
+
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                    </p:tabView>
+
+
+                </div> 
+
+            </h:form> 
+
+        </div> 
+
+      
+    </h:body>
+</html>
+
+
+

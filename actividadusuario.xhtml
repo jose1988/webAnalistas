@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Pangea Flow</title>
+
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <h:outputStylesheet name="../recursos/css/estilos.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+
+
+    <h:body>  
+        <div class="row">
+            <div class="col-md-12">
+                <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+            </div>
+            <div class="col-md-12">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+
+                        <a class="navbar-brand" href="#">PangeaFlow</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Archivo</a></li>
+                            <li><a href="#">Atrás</a></li>
+                            <li>
+                                <a href="#" >Opciones</a>
+
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#">Cerrar Sesión</a></li>
+
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>      
+            </div>
+        </div>
+
+
+
+
+        <div class="row">
+            <h:form id="fom"  prependId="false">
+                <div class="col-md-2 well" >
+                    <div class="col-md-12" >
+
+                        <div class="col-md-2" >
+                        </div>
+                        <div class="col-md-10" > 
+                            <p:growl id="messages" showDetail="true" />  
+
+
+                            <p:tree value="#{loginController.estact}" selection="#{loginController.estadoSeleccionado}" var="box" selectionMode="single">
+                                <p:ajax event="select" update="@form" listener="#{loginController.onNodeSelect}" /> 
+                                <p:treeNode icon="ui-icon-mail-closed" >
+                                    <h:outputText value="#{box}"/>
+
+
+                                </p:treeNode>
+
+                                <p:treeNode type="i" icon="ui-icon-mail-closed">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+
+                                <p:treeNode type="s" icon="ui-icon-transfer-e-w">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+
+                                <p:treeNode type="t" icon="ui-icon-trash">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+
+                                <p:treeNode type="j" icon="ui-icon-alert">
+                                    <h:outputText value="#{box}"/>
+                                </p:treeNode>
+                            </p:tree>
+                        </div>
+                    </div>
+                </div> 
+
+
+
+                <div class="col-md-10"> 
+
+                    <p:tabView dynamic="false" >
+                        <p:tab title="#{loginController.estadoSeleccionado}"  >
+
+
+                            <h:panelGroup id="paneltablaAbierta" rendered="#{loginController.estadoSeleccionado eq 'abierta'}">
+
+
+                                <p:dataTable var="actividad" value="#{loginController.actividades}"  paginator="true" rows="7">
+
+                                    <p:column headerText="Id Actividad" >
+                                        #{actividad.id}
+                                    </p:column>
+
+                                    <p:column headerText="Duracion" >
+                                        #{actividad.duracion}
+                                    </p:column>
+
+                                    <p:column headerText="Id Tarea">
+                                        #{actividad.idTarea.nombre}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información">
+
+                                        <p:commandButton id="verinfo" update="@form" icon="ui-icon-search"  oncomplete="infoActividadAbierta.show()"  title="Ver">
+                                            <f:setPropertyActionListener value="#{actividad}" target="#{loginController.act}" />
+                                        </p:commandButton>
+
+                                    </p:column>
+
+
+
+                                </p:dataTable>
+
+                                <p:dialog id="dlgactividadAbierta"  header="Actividad" widgetVar="infoActividadAbierta">  
+
+                                    <h:panelGroup id="actabierta">
+                                        <dl class="dl-horizontal">
+                                            <dt>Id:</dt> 
+                                            <dd><h:outputText value="#{loginController.act.id}" rendered="#{not empty loginController.actividades}" />
+                                            </dd>
+                                            <dt>Estado:</dt>
+                                            <dd> <h:outputLabel> #{loginController.act.estado} </h:outputLabel>
+                                            </dd>
+                                            <dt>Duracion:</dt>
+                                            <dd><h:outputLabel> #{loginController.act.duracion} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de asignacion: </dt>
+                                            <dd>  <h:outputLabel> #{loginController.act.fechaAsignacion} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de apertura :</dt>
+                                            <dd><h:outputLabel> #{loginController.act.fechaApertura} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de alerta:  </dt>
+                                            <dd> <h:outputLabel> #{loginController.act.fechaAlerta} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de cierre:</dt>
+                                            <dd>  <h:outputLabel> #{loginController.act.fechaCierre} </h:outputLabel>
+                                            </dd>
+                                            <dt>tarea:  </dt>
+                                            <dd> <h:outputLabel>#{loginController.act.idTarea.nombre} </h:outputLabel>
+                                            </dd>
+                                            <dt>Usuario: </dt>
+                                            <dd><h:outputLabel> #{loginController.act.idUsuario.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Prioridad:</dt> 
+                                            <dd> <h:outputLabel> #{loginController.act.idPrioridad.nombre} </h:outputLabel>
+                                            </dd>
+                                            <dt>Instancia: </dt>
+                                            <dd> <h:outputLabel> #{loginController.act.idInstancia.descripcion} </h:outputLabel>
+                                            </dd>
+                                            <dt> 
+                                                <p:commandButton update="@form" value="Finalizar Actividad" label="Finalizar Actividad" icon="ui-icon-check" process="actabierta" actionListener="#{loginController.finalizaract}" oncomplete="infoActividadAbierta.hide();" title="Finalizar Actividad">
+                                                </p:commandButton></dt>
+                                            <dd>
+                                                <p:commandButton value="Cancelar" label="Cancelar" onclick="infoActividadAbierta.hide()" icon="ui-icon-remove"  title="Cancelar">
+
+                                                </p:commandButton> </dd>
+
+
+                                        </dl>
+                                    </h:panelGroup>
+                                </p:dialog>
+
+                            </h:panelGroup>
+                            <h:panelGroup id="paneltablaCerrada" rendered="#{loginController.estadoSeleccionado eq 'cerrada'}" >
+
+
+                                <p:dataTable var="actividad" value="#{loginController.actividades}"  paginator="true" rows="7">
+
+                                    <p:column headerText="Id Actividad" >
+                                        #{actividad.id}
+                                    </p:column>
+
+                                    <p:column headerText="Duracion" >
+                                        #{actividad.duracion}
+                                    </p:column>
+
+                                    <p:column headerText="Id Tarea">
+                                        #{actividad.idTarea.nombre}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información">
+
+                                        <p:commandButton icon="ui-icon-search" id="verinfo" onclick="infoActividad.show()" type="button" title="Ver"/>
+
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+                                <p:dialog id="dlgactividadCerrada"  header="Actividad" widgetVar="infoActividadCerrada" >  
+                                    <h:outputText value="Resistance to PrimeFaces is futile!" />  
+                                </p:dialog>
+
+                            </h:panelGroup>
+                            <h:panelGroup id="paneltablaAnulada" rendered="#{loginController.estadoSeleccionado eq 'anulada'}" >
+
+
+                                <p:dataTable var="actividad" value="#{loginController.actividades}"  paginator="true" rows="7">
+
+                                    <p:column headerText="Id Actividad" >
+                                        #{actividad.id}
+                                    </p:column>
+
+                                    <p:column headerText="Duracion" >
+                                        #{actividad.duracion}
+                                    </p:column>
+
+                                    <p:column headerText="Id Tarea">
+                                        #{actividad.idTarea.nombre}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información">
+
+                                        <p:commandButton icon="ui-icon-search" id="verinfo" onclick="infoActividad.show()" type="button" title="Ver"/>
+
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+                                <p:dialog id="dlgactividadAnulada"  header="Actividad" widgetVar="infoActividadAnulada" >  
+                                    <h:outputText value="Resistance to PrimeFaces is futile!" />  
+                                </p:dialog>
+
+                            </h:panelGroup>
+                            <h:panelGroup id="paneltablaPendiente" rendered="#{loginController.estadoSeleccionado eq 'pendiente'}">
+
+
+                                <p:dataTable var="actividad" value="#{loginController.actividades}"  paginator="true" rows="7">
+
+                                    <p:column headerText="Id Actividad" >
+                                        #{actividad.id}
+                                    </p:column>
+
+                                    <p:column headerText="Duracion" >
+                                        #{actividad.duracion}
+                                    </p:column>
+
+                                    <p:column headerText="Id Tarea">
+                                        #{actividad.idTarea.nombre}
+                                    </p:column>
+
+                                    <p:column headerText="Ver Información">
+
+                                        <p:commandButton icon="ui-icon-search" id="verinfo" onclick="infoActividadAbierta.show()" type="button" title="Ver"/>
+
+                                    </p:column>
+
+                                    <p:column headerText="Iniciar Actividad">
+
+                                        <p:commandButton update="@form" icon="ui-icon-check" actionListener="#{loginController.cambiarestado}" title="aceptar">
+
+                                            <f:setPropertyActionListener value="#{actividad}" target="#{loginController.act}" />
+
+                                        </p:commandButton>
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <p:dialog id="dlgactividadPendiente"  header="Actividad" widgetVar="infoActividadPendiente" >  
+                                    <h:outputText value="Resistance to PrimeFaces is futile!" />  
+                                </p:dialog>
+
+                            </h:panelGroup>
+                        </p:tab>
+
+                    </p:tabView>
+
+
+                </div> 
+
+            </h:form> 
+
+        </div> 
+    </h:body>
+</html>

@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Pangea Flow</title>
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <h:outputStylesheet name="../recursos/css/estilos.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+
+    <h:body>
+        <!-- Se realiza la llamada a los métodos en donde se verifica el logueo del usuario -->
+        <c:if test="#{usuarioGrupoController.verificarLogueo()}">
+            <h:outputText value="#{usuarioGrupoController.Redireccionar()}" />
+        </c:if>
+
+        <!-- Se realiza la llamada al método en donde se cierra la sesión si han pasado 4 minutos y esta inactiva -->
+        <p:idleMonitor timeout="240000">  
+            <p:ajax event="idle" listener="#{usuarioGrupoController.cerrarPorInactividad}" />  
+        </p:idleMonitor>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+            </div>
+            <div class="col-md-12">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">PangeaFlow</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Archivo</a></li>
+                            <li><a href="#">Atrás</a></li>
+                            <li><a href="#">Opciones</a></li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="cierreSesion.xhtml">Cerrar Sesión</a></li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>      
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <h:form id="fom"  prependId="false">
+                <!-- Tabla en la que se muestra la lista de usuarios para el grupo que se seleccione -->                            
+                <h:panelGroup id="paneltablaUsuarios"> 
+
+                    <p:toolbar>  
+
+                        <p:toolbarGroup align="left">  
+                            <p:selectOneButton value="#{usuarioGrupoController.grupoPanel}" id="gruposdegrupos">           
+                                <f:selectItems value="#{usuarioGrupoController.grupos}" var="grupo" itemLabel="#{grupo.nombre}" itemValue="#{grupo.nombre}" />
+                                <p:ajax listener="#{usuarioGrupoController.botonActivado}" update=":fom:panelUsuarios"/>
+                            </p:selectOneButton>
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
+                    <h:panelGroup id="panelUsuarios">
+
+                        <p:dataTable var="usuarios" value="#{usuarioGrupoController.grupoUsuarios}"  paginator="true" rows="7">
+
+                            <p:column headerText="Id">
+                                #{usuarios.id}
+                            </p:column>
+
+                            <p:column headerText="Id Usuario">
+                                #{usuarios.idUsuario.id}
+                            </p:column>
+
+                            <!-- Botón que llama al diálogo en el cual se carga la información de la instancia seleccionada -->                                    
+                            <p:column headerText="Ver Información">
+                                <p:commandButton update="@form" icon="ui-icon-search"  oncomplete="infoUsuario.show()"  title="Ver" action="#{usuarioGrupoController.verDatosUsuario}">
+                                    <f:setPropertyActionListener value="#{usuarios}" target="#{usuarioGrupoController.grup}" />
+                                </p:commandButton>
+                            </p:column>
+
+                            <!-- Botón que llama al método que envia a la página actividadesPorUsuario.xhtml en la cual se listan las actividades dependiendo del usuario seleccionado y al grupo al que pertenezcan -->
+                            <p:column headerText="Ver Actividades">
+                                <p:commandButton update="@form" icon="ui-icon-link" action="#{usuarioGrupoController.verActividadesUsuario}" title="Ir a Actividades" >
+                                    <f:setPropertyActionListener value="#{usuarios}" target="#{usuarioGrupoController.grup}" />
+                                </p:commandButton>
+                            </p:column>                            
+                        </p:dataTable>
+
+                        <!-- Diálogo que muestra la información del usuario seleccionado -->
+                        <p:dialog id="dlgUsuario"  header="Usuario" widgetVar="infoUsuario">  
+                            <h:panelGroup id="infUsuario">
+                                <dl class="dl-horizontal">
+                                    <dt>Id: </dt> 
+                                    <dd><h:outputText value="#{usuarioGrupoController.datosusuarios.id}" rendered="#{not empty usuarioGrupoController.grupoUsuarios}" />
+                                    </dd>
+                                    <dt>Nombre: </dt>
+                                    <dd><h:outputLabel> #{usuarioGrupoController.datosusuarios.primerNombre} </h:outputLabel>
+                                    </dd>
+                                    <dt>Apellido: </dt>
+                                    <dd><h:outputLabel> #{usuarioGrupoController.datosusuarios.primerApellido} </h:outputLabel>
+                                    </dd>
+                                    <dt>Cédula: </dt>
+                                    <dd><h:outputLabel> #{usuarioGrupoController.datosusuarios.cedula} </h:outputLabel>
+                                    </dd>
+                                    <dt>Dirección: </dt>
+                                    <dd><h:outputLabel> #{usuarioGrupoController.datosusuarios.direccionPersonal} </h:outputLabel>
+                                    </dd>
+                                    <dt>Estado: </dt>
+                                    <dd><h:outputLabel> #{usuarioGrupoController.datosusuarios.estado} </h:outputLabel>
+                                    </dd>
+                                    <dt>Clasificación: </dt>
+                                    <dd><h:outputLabel> #{usuarioGrupoController.datosusuarios.idClasificacionUsuario.nombre} </h:outputLabel>
+                                    </dd>
+                                    <dd>
+                                        <p:commandButton value="Cancelar" label="Cancelar" onclick="infoUsuario.hide()" icon="ui-icon-close"  title="Cancelar">
+                                        </p:commandButton> </dd>
+                                </dl>
+                            </h:panelGroup>
+                        </p:dialog>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+            </h:form>
+        </div> 
+    </h:body>
+</html>

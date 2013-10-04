@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Pangea Flow</title>
+        <h:outputStylesheet name="../recursos/css/bootstrap.css"/>
+        <h:outputStylesheet name="../recursos/css/bootstrap-theme.css"/>
+        <h:outputStylesheet name="../recursos/css/estilos.css"/>
+        <script type="text/javascript" src="recursos/js/bootstrap.js"></script>
+    </h:head>
+
+    <h:body>
+        <!-- Se realiza la llamada a los métodos en donde se verifica el logueo del usuario -->
+        <c:if test="#{usuarioGrupoController.verificarLogueo()}">
+            <h:outputText value="#{usuarioGrupoController.Redireccionar()}" />
+        </c:if>
+        
+        <!-- Se realiza la llamada al método en donde se cierra la sesión si han pasado 4 minutos y esta inactiva -->
+        <p:idleMonitor timeout="240000">  
+            <p:ajax event="idle" listener="#{usuarioGrupoController.cerrarPorInactividad}" />  
+        </p:idleMonitor>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <h:graphicImage value="/recursos/images/pangea.jpg"  width="400" height="90"></h:graphicImage> 
+            </div>
+            <div class="col-md-12">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">PangeaFlow</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Archivo</a></li>
+                            <li><a href="#">Atrás</a></li>
+                            <li><a href="#">Opciones</a></li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="cierreSesion.xhtml">Cerrar Sesión</a></li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>      
+            </div>
+        </div>
+
+        <div class="row">
+            <h:form id="fom"  prependId="false">
+                <div class="col-md-12"> 
+                    <p:tabView dynamic="false" >
+                        <p:tab title="Actividades Pendientes">
+                            <!-- Tabla en la que se muestra la lista de actividades con el estado pendiente -->
+                            <h:panelGroup id="paneltablaAbierta">
+                                <p:dataTable var="actividad" value="#{actividadController.actividades}"  paginator="true" rows="7">
+
+                                    <p:column headerText="Id Actividad" >
+                                        #{actividad.id}
+                                    </p:column>
+
+                                    <p:column headerText="Duración" >
+                                        #{actividad.duracion}
+                                    </p:column>
+
+                                    <p:column headerText="Id Tarea">
+                                        #{actividad.idTarea.nombre}
+                                    </p:column>
+
+                                    <!-- Botón que llama al diálogo en el cual se carga la información de la actividad seleccionada -->
+                                    <p:column headerText="Ver Información">
+                                        <p:commandButton update="@form" icon="ui-icon-search"  oncomplete="infoActividad.show()"  title="Ver">
+                                            <f:setPropertyActionListener value="#{actividad}" target="#{actividadController.act}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                    
+                                    <!-- Botón que llama al método que envia a la página asignarActividad.xhtml en la cual se listan los usuarios a los que se le puede asignar la actividad seleccionada -->                                    
+                                    <p:column headerText="Asignar Actividades">
+                                        <p:commandButton update="@form" icon="ui-icon-link" action="#{actividadController.actividadAsignar}" >
+                                            <f:setPropertyActionListener value="#{actividad}" target="#{actividadController.act}" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <!-- Diálogo que muestra la información de la actividad seleccionada -->
+                                <p:dialog id="dlgactividadAbierta"  header="Actividad" widgetVar="infoActividad">  
+                                    <h:panelGroup id="actabierta">
+                                        <dl class="dl-horizontal">
+                                            <dt>Id: </dt> 
+                                            <dd><h:outputText value="#{actividadController.act.id}" rendered="#{not empty actividadController.actividades}" />
+                                            </dd>
+                                            <dt>Estado: </dt>
+                                            <dd><h:outputLabel> #{actividadController.act.estado} </h:outputLabel>
+                                            </dd>
+                                            <dt>Duración: </dt>
+                                            <dd><h:outputLabel> #{actividadController.act.duracion} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Asignación: </dt>
+                                            <dd><h:outputLabel> #{actividadController.formatoFecha(actividadController.act.fechaAsignacion)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Apertura: </dt>
+                                            <dd><h:outputLabel> #{actividadController.formatoFecha(actividadController.act.fechaApertura)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Alerta: </dt>
+                                            <dd><h:outputLabel> #{actividadController.formatoFecha(actividadController.act.fechaAlerta)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Fecha de Cierre: </dt>
+                                            <dd><h:outputLabel> #{actividadController.formatoFecha(actividadController.act.fechaCierre)} </h:outputLabel>
+                                            </dd>
+                                            <dt>Tarea: </dt>
+                                            <dd><h:outputLabel>#{actividadController.act.idTarea.nombre} </h:outputLabel>
+                                            </dd>
+                                            <dt>Usuario: </dt>
+                                            <dd><h:outputLabel> #{actividadController.act.idUsuario.id} </h:outputLabel>
+                                            </dd>
+                                            <dt>Prioridad: </dt> 
+                                            <dd><h:outputLabel> #{actividadController.act.idPrioridad.nombre} </h:outputLabel>
+                                            </dd>
+                                            <dt>Instancia: </dt>
+                                            <dd><h:outputLabel> #{actividadController.act.idInstancia.descripcion} </h:outputLabel>
+                                            </dd>
+                                            <dt> 
+                                                <p:commandButton value="Cancelar" label="Cancelar" onclick="infoActividad.hide()" icon="ui-icon-remove"  title="Cancelar">
+                                                </p:commandButton></dt>
+                                        </dl>
+                                    </h:panelGroup>
+                                </p:dialog>
+                            </h:panelGroup>
+                        </p:tab>
+                    </p:tabView>
+                </div>
+            </h:form>
+        </div> 
+    </h:body>
+</html>
