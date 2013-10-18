@@ -144,10 +144,7 @@
                                     </p:column>
 
 
-                                    <p:column headerText="Ver Información" style="width:  20px; text-align: center; " rendered="#{gestionActividades.estadoSeleccionado eq 'abierta'}">
-
-                                        <p:commandButton id="verinfo3" update=":fom" icon="ui-icon-search"  oncomplete="infoActividadAbierta.show()"  title="Ver"/>
-                                    </p:column>
+                                    
                                     <p:column headerText="Ver Información a" style="width:  20px; text-align: center;  " rendered="#{gestionActividades.estadoSeleccionado eq 'abierta'}">
 
                                         <p:commandButton id="verinfoabrierta" update=":fom" icon="ui-icon-search"  action="#{gestionActividades.finalizarActividad}"  title="Ver">
@@ -169,7 +166,7 @@
                                         <p:commandButton icon="ui-icon-search" id="verinfocerrar" onclick="infoActividadCerrada.show()" type="button" title="Ver"/>
 
                                     </p:column>
-                                    <p:column headerText="Pendiente" style="width:  20px; text-align: center;  ">
+                                    <p:column headerText="Pendiente" style="width:  20px; text-align: center;" rendered="#{gestionActividades.estadoSeleccionado eq 'pendiente'}">
 
 
                                         <p:commandButton id="ver" update=":fom" icon="ui-icon-arrow-2-e-w" action="#{gestionActividades.cambiarEstadoPendiente}" title="aceptar">
